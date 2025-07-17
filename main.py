@@ -34,6 +34,16 @@ class TelegramBot:
     async def handle_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle bot commands"""
         command = update.message.text[1:].lower()  # Remove '/' and convert to lowercase
+    if command == "ping":
+        start_time = time.time()
+        # Create a temporary message to measure round-trip time
+        message = await update.message.reply_text(COMMANDS["ping"])
+        end_time = time.time()
+        latency = round((end_time - start_time) * 1000)  # Convert to milliseconds
+        
+        # Edit the message with the actual latency
+        await message.edit_text(f"Pong! 🏓 Latency: {latency}ms")
+return
         
         if command in COMMANDS:
             response = COMMANDS[command]
