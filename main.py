@@ -43,6 +43,7 @@ class TelegramBot:
         
         # Edit the message with the actual latency
         await message.edit_text(f"Pong! 🏓 Latency: {latency}ms")
+
 return
         
         if command in COMMANDS:
