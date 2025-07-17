@@ -22,64 +22,65 @@ class TelegramBot:
         self.token = token
         self.app = Application.builder().token(token).build()
         self.setup_handlers()
-    
+
     def setup_handlers(self):
         """Set up command and message handlers"""
         # Add command handlers
         for command in COMMANDS.keys():
             self.app.add_handler(CommandHandler(command, self.handle_command))
-        
+
         # Add message handler for regular text
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message))
-    
+
     async def handle_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-    command = update.message.text[1:].lower()  # Remove '/' and convert to lowercase
+        """Handle command messages"""
+        command = update.message.text[1:].lower()  # Remove '/' and convert to lowercase
 
-    # Special handling for ping command
-    if command == "ping":
-        start_time = time.time()
-        # Create a temporary message to measure round-trip time
-        message = await update.message.reply_text(COMMANDS["ping"])
-        end_time = time.time()
-        latency = round((end_time - start_time) * 1000)  # Convert to milliseconds
-        
-        # Edit the message with the actual latency
-        await message.edit_text(f"Pong! 🏓 Latency: {latency}ms")
-        return
+        # Special handling for ping command
+        if command == "ping":
+            start_time = time.time()
+            # Create a temporary message to measure round-trip time
+            message = await update.message.reply_text(COMMANDS["ping"])
+            end_time = time.time()
+            latency = round((end_time - start_time) * 1000)  # Convert to milliseconds
 
-    if command in COMMANDS:
-        response = COMMANDS[command]
-        await update.message.reply_text(response, parse_mode='Markdown')
-    else:
-        await update.message.reply_text("Unknown command. Type /help for available commands.")
+            # Edit the message with the actual latency
+            await message.edit_text(f"Pong! 🏓 Latency: {latency}ms")
+            return
+
+        if command in COMMANDS:
+            response = COMMANDS[command]
+            await update.message.reply_text(response, parse_mode='Markdown')
+        else:
+            await update.message.reply_text("Unknown command. Type /help for available commands.")
 
     async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle regular messages"""
         user_message = update.message.text.lower()
         user_name = update.effective_user.first_name
-        
+
         # Log the message
         logger.info(f"Received message from {user_name}: {user_message}")
-        
+
         # Find best response
         response = self.find_response(user_message)
-        
+
         # Send response
         await update.message.reply_text(response)
-    
+
     def find_response(self, message):
         """Find the best response for a given message"""
         message = message.lower().strip()
-        
+
         # Direct match
         if message in RESPONSES:
             return RESPONSES[message]
-        
+
         # Check for partial matches
         for trigger, response in RESPONSES.items():
             if trigger != "default" and trigger in message:
                 return response
-        
+
         # Check for keyword matches
         message_words = message.split()
         for trigger, response in RESPONSES.items():
@@ -87,11 +88,11 @@ class TelegramBot:
                 trigger_words = trigger.split()
                 if any(word in message_words for word in trigger_words):
                     return response
-        
+
         # Default response
         default_responses = RESPONSES["default"]
         return random.choice(default_responses)
-    
+
     def run(self):
         """Start the bot"""
         logger.info("Starting bot...")
@@ -100,13 +101,13 @@ class TelegramBot:
 def main():
     """Main function to run the bot"""
     bot_token = os.getenv('BOT_TOKEN')
-    
+
     if not bot_token:
         print("Error: BOT_TOKEN not found in environment variables!")
         print("Please check your .env file and make sure it contains:")
         print("BOT_TOKEN=your_bot_token_here")
         return
-    
+
     try:
         bot = TelegramBot(bot_token)
         print("Bot is starting...")
