@@ -42,6 +42,7 @@ RESPONSES = {
 # Commands (these start with /)
 COMMANDS = {
     "start": "Welcome! I'm your personal chatbot. Type /help to see what I can do!",
+"ping": "Pong calculating bot latency.. hold",
     "help": """
 🤖 *Bot Commands:*
 /start - Start the bot
