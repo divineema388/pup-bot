@@ -33,7 +33,6 @@ class TelegramBot:
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message))
     
     async def handle_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle bot commands"""
     command = update.message.text[1:].lower()  # Remove '/' and convert to lowercase
 
     # Special handling for ping command
