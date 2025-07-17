@@ -8,7 +8,7 @@ echo "======================================"
 # Check if Python is installed
 if ! command -v python3 &> /dev/null; then
     echo "❌ Python 3 is not installed. Please install Python 3.8+ and try again."
-    exit 1
+    exit 2
 fi
 
 # Check if git is installed
