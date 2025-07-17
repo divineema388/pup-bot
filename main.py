@@ -1,4 +1,5 @@
 import os
+import time
 import random
 import logging
 from telegram import Update
@@ -32,8 +33,10 @@ class TelegramBot:
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message))
     
     async def handle_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Handle bot commands"""
-        command = update.message.text[1:].lower()  # Remove '/' and convert to lowercase
+    """Handle bot commands"""
+    command = update.message.text[1:].lower()  # Remove '/' and convert to lowercase
+
+    # Special handling for ping command
     if command == "ping":
         start_time = time.time()
         # Create a temporary message to measure round-trip time
@@ -43,15 +46,14 @@ class TelegramBot:
         
         # Edit the message with the actual latency
         await message.edit_text(f"Pong! 🏓 Latency: {latency}ms")
+        return
 
-return
-        
-        if command in COMMANDS:
-            response = COMMANDS[command]
-            await update.message.reply_text(response, parse_mode='Markdown')
-        else:
-            await update.message.reply_text("Unknown command. Type /help for available commands.")
-    
+    if command in COMMANDS:
+        response = COMMANDS[command]
+        await update.message.reply_text(response, parse_mode='Markdown')
+    else:
+        await update.message.reply_text("Unknown command. Type /help for available commands.")
+
     async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle regular messages"""
         user_message = update.message.text.lower()
